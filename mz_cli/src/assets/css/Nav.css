@@ -1,0 +1,13 @@
+.badge-blue {
+    margin-top: -25px;
+    margin-left: -10px;
+    background-color: rgb(71, 134, 206);
+    color: white;
+}
+
+.badge-red {
+    margin-top: -25px;
+    margin-left: -10px;
+    background-color: rgb(206, 71, 71);
+    color: white;
+}
