@@ -5,6 +5,23 @@ export default class Schedule extends BaseModel {
   @column({ isPrimary: true })
   public id: number
 
+  @column()
+  public companyId: number
+  @column()
+  public title: string
+
+  @column()
+  public startDate: DateTime
+
+  @column()
+  public startTime: string
+
+  @column()
+  public endDate: DateTime
+
+  @column()
+  public endTime: string
+
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime
 

@@ -42,7 +42,7 @@ function Header() {
                 <span className="uk-badge side-badge-red">0</span>
                 <li>
                   <Link
-                    to="/"
+                    to="/admin/schedules"
                     data-uk-icon="icon:calendar"
                     title="Agendas"
                     data-uk-tooltip="Agendas"

@@ -46,6 +46,7 @@ Route.group(() => {
   Route.delete('tip/images/:id', 'TipImagesController.destroy')
   Route.resource('adverts', 'AdvertsController').apiOnly()
   Route.resource('claims', 'ClaimsController').apiOnly()
+  Route.resource('schedules', 'SchedulesController').apiOnly()
 })
   .prefix('api/admin')
   .namespace('App/Controllers/Http/Admin')

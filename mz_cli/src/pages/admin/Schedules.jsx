@@ -1,11 +1,11 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import SimpleReactValidator from "simple-react-validator";
 import Axios from "../../app/Axios";
 import Header from "../../components/admin/Header";
 import Side from "../../components/admin/Side";
-import { selectUser } from "../../features/userSlice";
+import { logout, selectUser } from "../../features/userSlice";
 import Load from "../../components/Load";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -28,19 +28,125 @@ function Schedules() {
   /**
    * states
    */
+  const [schedules, setSchedules] = useState([]);
   const [title, setTitle] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [load, setLoad] = useState(true);
+  const [refresh, setRefresh] = useState(false);
+
+  useEffect(() => {
+    async function getSchedules() {
+      document.title = "Agenda";
+      try {
+        const res = await axios.get("admin/schedules");
+        setSchedules(res.data);
+      } catch (error) {
+        toast.error("Ooops!Ocorreu algum problema");
+        if (error.response) {
+          console.log(error.response);
+          if (error.response.status === 401) {
+            dispatch(logout());
+          }
+        }
+      }
+      setLoad(false);
+    }
+    getSchedules();
+  }, [refresh]);
+
+  function clear() {
+    setTitle("");
+    setStartDate("");
+    setStartTime("");
+    setEndDate("");
+    setEndTime("");
+  }
 
   async function store(e) {
     e.preventDefault();
     if (validator.current.allValid()) {
+      const form = new FormData();
+      form.append("companyId", user.user.company_id);
+      form.append("title", title);
+      form.append("startDate", startDate);
+      form.append("startTime", startTime);
+      form.append("endDate", endDate);
+      form.append("endTime", endTime);
+      setBusy(true);
+      try {
+        const res = await axios.post("/admin/schedules", form);
+        if (res.data.success) {
+          toast.success("Agenda criada com sucesso.");
+          setRefresh(!refresh);
+          clear();
+        } else {
+          toast.error(
+            "Ooops! Erro ao tentar criar a agenda. Por favor tente novamente."
+          );
+        }
+        setBusy(false);
+        return;
+      } catch (error) {
+        setBusy(false);
+        toast.error("Opps!Ocorreu algum problema");
+        if (error.response) {
+          console.error(error.response);
+          if (error.response.data.errors) {
+            let message = "";
+            for (const key in error.response.data.errors) {
+              message += error.response.data.errors[key].message + "\n";
+            }
+            toast.error(message);
+          }
+        }
+      }
     } else {
       validator.current.showMessages();
     }
   }
+
+  // confirm delete
+  function confirm(id) {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        destroy(id);
+      }
+    });
+  }
+  // destroy
+  async function destroy(id) {
+    setLoad(true);
+    try {
+      const res = await axios.delete(`/admin/schedules/${id}`);
+      if (res.data.success) {
+        toast.success("Actividade eliminada com sucesso.");
+        setRefresh(!refresh);
+      } else {
+        toast.error(
+          "Ooops! Erro ao tentar eliminar a actividade. Por favor tente novamente."
+        );
+      }
+    } catch (error) {
+      toast.error("Ooops!Ocorreu algum problema");
+      if (error.response) {
+        console.log(error.response);
+      }
+    }
+    setLoad(false);
+  }
+
   return (
     <>
       <Header />
@@ -60,7 +166,7 @@ function Schedules() {
             <ul uk-accordion="true">
               <li>
                 <button className="uk-accordion-title uk-button uk-button-muted">
-                  Criar Agenda
+                  Agendar Actividade
                 </button>
                 <div className="uk-accordion-content">
                   <form
@@ -73,7 +179,7 @@ function Schedules() {
                       <input
                         className="uk-input"
                         type="text"
-                        placeholder="Titulo da agenda"
+                        placeholder="Titulo da actividade"
                         value={title}
                         onChange={(e) => {
                           setTitle(e.target.value);
@@ -83,7 +189,7 @@ function Schedules() {
                         {validator.current.message(
                           "title",
                           title,
-                          "required|min3|max:255"
+                          "required|min:3|max:255"
                         )}
                       </span>
                     </div>
@@ -161,7 +267,17 @@ function Schedules() {
                     </div>
                     <hr />
                     <div className="uk-position-bottom-right uk-margin-medium-right">
-                      <button className="uk-button uk-button-primary">
+                      <button
+                        type="button"
+                        onClick={clear}
+                        className="uk-button uk-button-default"
+                      >
+                        limpar
+                      </button>
+                      <button
+                        className="uk-button uk-button-primary"
+                        disabled={busy}
+                      >
                         criar
                       </button>
                     </div>
@@ -170,26 +286,27 @@ function Schedules() {
               </li>
             </ul>
           </div>
-          <div className="uk-card uk-card-default uk-width-1-2@m">
+          <div uk-grid="true">
+            {schedules.map((schedule)=>{return(
+              <div key={schedule.id} className="uk-card uk-card-default uk-width-1-2@m">
             <div className="uk-card-header">
               <div className="uk-grid-small uk-flex-middle" uk-grid="true">
                 <div className="uk-width-expand">
-                  <h3 className="uk-card-title uk-margin-remove">Title</h3>
+                  <h3 className="uk-card-title uk-margin-remove">{schedule.title}</h3>
                   <p className="uk-text-meta uk-margin-remove">
-                    <time datetime="2016-04-01T19:00">April 01, 2016</time>
+                    <time dateTime="2016-04-01T19:00"><Moment date={schedule.created_at} format="ddd DD/MM/YYYY - HH:MM" /></time>
                   </p>
                 </div>
               </div>
             </div>
             <div className="uk-card-body">
               <p>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-                eiusmod tempor incididunt.
+                De <Moment date={schedule.start_date} format="ddd DD/MM/YYYY" /> das {`${schedule.start_time} as ${schedule.end_time}`} ate <Moment date={schedule.end_date} format="ddd DD/MM/YYYY" />
               </p>
               <div
                 className="uk-grid-small uk-child-width-auto"
                 uk-grid="true"
-                uk-countdown="date: 2021-10-08T15:17:17+00:00"
+                uk-countdown={`date: ${schedule.end_date.substr(0,10)}T${schedule.end_time}+00:00`}
               >
                 <div>
                   <div className="uk-countdown-days"></div>
@@ -221,9 +338,13 @@ function Schedules() {
               </div>
             </div>
             <div className="uk-card-footer">
-              <button className="uk-button uk-button-text">Read more</button>
+              <button onClick={()=>{confirm(schedule.id)}} className="uk-button uk-button-text uk-text-danger">Eliminar</button>
             </div>
           </div>
+            )})}
+          
+          </div>
+          <Load load={load} />
         </div>
       </div>
     </>
