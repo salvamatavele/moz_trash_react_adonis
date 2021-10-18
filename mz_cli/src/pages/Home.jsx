@@ -1,10 +1,60 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Nav from "../components/Nav";
 import bg from "../assets/images/bg.jpg";
+import Axios from "../app/Axios";
+import Load from "../components/Load";
+import Url from "../constants/Global"
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import Moment from "react-moment";
+import { Link } from "react-router-dom";
+
 function Home() {
+  /**
+   * configs
+   */
+  const axios = Axios();
+  /**
+   * states
+   */
+  const [adverts, setAdverts] = useState([]);
+  const [tips,setTips] = useState([]);
+  const [load, setLoad] = useState(true);
+
+  useEffect(() => {
+    async function getAdverts() {
+      try {
+        const res = await axios.get("/adverts");
+        setAdverts(res.data.data);
+        setLoad(false);
+      } catch (error) {
+        toast.warning("Ooops! Ocorreu algum problema.");
+        setLoad(false);
+      }
+    }
+    getAdverts();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    async function getTips() {
+      try {
+        const res = await axios.get("/tips");
+        setTips(res.data.data);
+        setLoad(false);
+      } catch (error) {
+        toast.warning("Ooops! Ocorreu algum problema.");
+        setLoad(false);
+      }
+    }
+    getTips();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <>
       <Nav />
+      <ToastContainer />
       {/* <!-- HERO --> */}
       <section className="uk-section uk-section-small">
         <div className="uk-container">
@@ -13,7 +63,7 @@ function Home() {
             <div className="uk-overlay uk-overlay-primary uk-position-cover uk-flex uk-flex-center uk-flex-middle uk-light uk-text-center">
               <div data-uk-scrollspy="cls: uk-animation-slide-bottom-small">
                 <span
-                  style={{ letterSpacing: 0.2 + "em", fontSize: 0.770 + "rem" }}
+                  style={{ letterSpacing: 0.2 + "em", fontSize: 1 + "rem" }}
                 >
                   HIGIENE É SAÚDE E SAÚDE É VIDA!
                 </span>
@@ -23,14 +73,8 @@ function Home() {
                 <p>
                   Mantenha a sua casa e a sua cidade limpa, deposite sempre os
                   rediduos em locais apropriados, recicle os, e separe os de
-                  acordo com os tipos. Ensine ao seu irmão também.
+                  acordo com os tipos. Ensine o seu irmão também.
                 </p>
-                <a
-                  href={"/"}
-                  className="uk-button uk-button-default uk-margin-top"
-                >
-                  GO TO ARTICLE
-                </a>
               </div>
             </div>
           </div>
@@ -41,13 +85,15 @@ function Home() {
       {/* <!-- FEATURED --> */}
       <div className="uk-container">
         <h4 className="uk-heading-line uk-text-bold">
-          <span>Featured</span>
+          <span>Anúncios de Interesse Público</span>
         </h4>
         <div data-uk-slider="velocity: 5">
           <div className="uk-position-relative">
             <div className="uk-slider-container">
               <ul className="uk-slider-items uk-child-width-1-2@m uk-grid uk-grid-medium news-slide">
-                <li>
+                
+                {adverts.map((advert)=>{return(
+                  <li key={advert.id}>
                   <div className="uk-card uk-card-default uk-card-body uk-card-small uk-flex uk-flex-middle uk-card-default uk-border-rounded">
                     <div
                       className="uk-grid uk-grid-medium uk-flex uk-flex-middle"
@@ -55,7 +101,7 @@ function Home() {
                     >
                       <div className="uk-width-1-3@s uk-width-2-5@m uk-height-1-1">
                         <img
-                          src="https://picsum.photos/500/500/?random=1"
+                          src={`${Url}/image/adverts/${advert.image_url}`}
                           alt=""
                         />
                       </div>
@@ -64,163 +110,52 @@ function Home() {
                           className="uk-label uk-label-warning"
                           style={{ fontSize: 0.75 + "rem" }}
                         >
-                          Trends
+                          Recente
                         </span>
-                        <h3 className="uk-card-title uk-margin-small-top uk-margin-remove-bottom">
-                          <a className="uk-link-reset" href={"/"}>
-                            Short Blog Title
-                          </a>
-                        </h3>
+                        <h4 className="uk-card-title uk-margin-small-top uk-margin-remove-bottom">
+                          <Link className="uk-link-text" to={"/"}>
+                            {advert.title}
+                          </Link>
+                        </h4>
                         <span className="uk-article-meta">
-                          Published 12th August 2019
+                          Publicado aos <Moment date={advert.created_at} format="DD MMMM YYYY" />
                         </span>
                         <p className="uk-margin-small">
-                          Lorem ipsum dolor sit amet, consectetur adipiscing
-                          elit, sed do...
+                          {advert.content.substr(0,100)}...
                         </p>
                       </div>
                     </div>
                   </div>
                 </li>
-                <li>
-                  <div className="uk-card uk-card-default uk-card-body uk-card-small uk-flex uk-flex-middle uk-card-default uk-border-rounded">
-                    <div
-                      className="uk-grid uk-grid-medium uk-flex uk-flex-middle"
-                      data-uk-grid="true"
-                    >
-                      <div className="uk-width-1-3@s uk-width-2-5@m uk-height-1-1">
-                        <img
-                          src="https://picsum.photos/500/500/?random=2"
-                          alt=""
-                        />
-                      </div>
-                      <div className="uk-width-2-3@s uk-width-3-5@m">
-                        <span
-                          className="uk-label uk-label-warning"
-                          style={{ fontSize: 0.75 + "rem" }}
-                        >
-                          Trends
-                        </span>
-                        <h3 className="uk-card-title uk-margin-small-top uk-margin-remove-bottom">
-                          <a className="uk-link-reset" href={"/"}>
-                            Short Blog Title
-                          </a>
-                        </h3>
-                        <span className="uk-article-meta">
-                          Published 12th August 2019
-                        </span>
-                        <p className="uk-margin-small">
-                          Lorem ipsum dolor sit amet, consectetur adipiscing
-                          elit, sed do...
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </li>
-                <li>
-                  <div className="uk-card uk-card-default uk-card-body uk-card-small uk-flex uk-flex-middle uk-card-default uk-border-rounded">
-                    <div
-                      className="uk-grid uk-grid-medium uk-flex uk-flex-middle"
-                      data-uk-grid="true"
-                    >
-                      <div className="uk-width-1-3@s uk-width-2-5@m uk-height-1-1">
-                        <img
-                          src="https://picsum.photos/500/500/?random=3"
-                          alt=""
-                        />
-                      </div>
-                      <div className="uk-width-2-3@s uk-width-3-5@m">
-                        <span
-                          className="uk-label uk-label-warning"
-                          style={{ fontSize: 0.75 + "rem" }}
-                        >
-                          Trends
-                        </span>
-                        <h3 className="uk-card-title uk-margin-small-top uk-margin-remove-bottom">
-                          <a className="uk-link-reset" href={"/"}>
-                            Short Blog Title
-                          </a>
-                        </h3>
-                        <span className="uk-article-meta">
-                          Published 12th August 2019
-                        </span>
-                        <p className="uk-margin-small">
-                          Lorem ipsum dolor sit amet, consectetur adipiscing
-                          elit, sed do...
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </li>
-                <li>
-                  <div className="uk-card uk-card-default uk-card-body uk-card-small uk-flex uk-flex-middle uk-card-default uk-border-rounded">
-                    <div
-                      className="uk-grid uk-grid-medium uk-flex uk-flex-middle"
-                      data-uk-grid="true"
-                    >
-                      <div className="uk-width-1-3@s uk-width-2-5@m uk-height-1-1">
-                        <img
-                          src="https://picsum.photos/500/500/?random=4"
-                          alt=""
-                        />
-                      </div>
-                      <div className="uk-width-2-3@s uk-width-3-5@m">
-                        <span
-                          className="uk-label uk-label-warning"
-                          style={{ fontSize: 0.75 + "rem" }}
-                        >
-                          Trends
-                        </span>
-                        <h3 className="uk-card-title uk-margin-small-top uk-margin-remove-bottom">
-                          <a className="uk-link-reset" href={"/"}>
-                            Short Blog Title
-                          </a>
-                        </h3>
-                        <span className="uk-article-meta">
-                          Published 12th August 2019
-                        </span>
-                        <p className="uk-margin-small">
-                          Lorem ipsum dolor sit amet, consectetur adipiscing
-                          elit, sed do...
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </li>
+                )})}
+                
               </ul>
             </div>
             <div className="uk-hidden@l uk-light">
-              <a
+              <button
                 className="uk-position-center-left uk-position-small"
-                href={"/"}
                 data-uk-slidenav-previous
                 data-uk-slider-item="previous"
-              ></a>
-              <a
+              ></button>
+              <button
                 className="uk-position-center-right uk-position-small"
-                href={"/"}
                 data-uk-slidenav-next
                 data-uk-slider-item="next"
-              ></a>
+              ></button>
             </div>
             <div className="uk-visible@l">
-              <a
+              <button
                 className="uk-position-center-left-out uk-position-small"
-                href={"/"}
                 data-uk-slidenav-previous
                 data-uk-slider-item="previous"
-              ></a>
-              <a
+              ></button>
+              <button
                 className="uk-position-center-right-out uk-position-small"
-                href={"/"}
                 data-uk-slidenav-next
                 data-uk-slider-item="next"
-              ></a>
+              ></button>
             </div>
           </div>
-          <ul className="uk-slider-nav uk-dotnav uk-flex-center uk-margin">
-            <li></li>
-          </ul>
         </div>
       </div>
       {/* <!-- /FEATURED --> */}
@@ -230,267 +165,62 @@ function Home() {
           <div className="uk-grid" data-ukgrid="true">
             <div className="uk-width-2-3@m">
               <h4 className="uk-heading-line uk-text-bold">
-                <span>Latest News</span>
+                <span>Ultimas Dicas de Reciclagem</span>
               </h4>
-              <article className="uk-section uk-section-small uk-padding-remove-top">
+              {tips.map((tip)=>{return(
+                <article key={tip.id} className="uk-section uk-section-small uk-padding-remove-top">
                 <header>
-                  <h2 className="uk-margin-remove-adjacent uk-text-bold uk-margin-small-bottom">
-                    <a
-                      title="Fusce facilisis tempus magna ac dignissim."
-                      className="uk-link-reset"
-                      href={"/"}
+                  <h3 className="uk-margin-remove-adjacent uk-text-bold uk-margin-small-bottom">
+                    <Link
+                      className=""
+                      to={"/"}
                     >
-                      Fusce facilisis tempus magna ac dignissim.
-                    </a>
-                  </h2>
+                      {tip.title}
+                    </Link>
+                  </h3>
                   <p className="uk-article-meta">
-                    Written on March 23, 2019. Posted in <a href={"/"}>Blog</a>{" "}
+                    Escrito em <Moment date={tip.created_at} format="MMMM DD, YYYY" /> {tip.link && (<>Postado no <a href={tip.link} target="_blank" rel="noopener noreferrer">Link</a></>)}
                     | <span data-uk-icon="icon: future"></span> Takes 7 min
                     reading.
                   </p>
                 </header>
-                <figure>
                   <img
-                    src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAEsCAYAAAA7Ldc6AAADuUlEQVR4nO3BgQAAAADDoPlTX+AIVQEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMA3p/4AAaxRls8AAAAASUVORK5CYII="
-                    data-src="https://picsum.photos/800/300/?random=1"
-                    width="800"
-                    height="300"
+                    src={`${Url}/image/tips/${tip.image_url}`}
+                    width="800" 
                     alt="Alt text"
                     className="lazy"
                     data-uk-img="true"
+                    // style={{height: 400+"px"}}
                   />
-                  <figcaption className="uk-padding-small uk-text-center uk-text-muted">
-                    Caption of the image
-                  </figcaption>
-                </figure>
+                  
                 <p>
-                  UPDATE 24th October 15.10 BST — Vivamus sed consequat urna.
-                  Fusce vitae urna sed ante placerat iaculis. Suspendisse
-                  potenti. Pellentesque quis fringilla libero. In hac habitasse
-                  platea dictumst.
+                  ACTUALIZADO <Moment date={tip.updated_at} format="MMMM DD, YYYY HH:MM" /> -{tip.content.substr(0,400)}...
                 </p>
-                <p>
-                  Ultricies eget, tempor sit amet, ante. Donec eu libero sit
-                  amet quam egestas semper. Aenean ultricies mi vitae est.
-                  Mauris placerat eleifend leo.
-                </p>
-                <a
-                  href={"/"}
-                  title="Read More"
+  
+                <Link
+                  to={"/"}
                   className="uk-button uk-button-default uk-button-small"
                 >
-                  READ MORE
-                </a>
+                  Ler Mais
+                </Link>
                 <hr />
               </article>
-              <article className="uk-section uk-section-small uk-padding-remove-top">
-                <header>
-                  <h2 className="uk-margin-remove-adjacent uk-text-bold uk-margin-small-bottom">
-                    <a
-                      title="Ultricies eget, tempor sit amet, ante"
-                      className="uk-link-reset"
-                      href={"/"}
-                    >
-                      Ultricies eget, tempor sit amet, ante.
-                    </a>
-                  </h2>
-                  <p className="uk-article-meta">
-                    Written on March 22, 2019. Posted in <a href={"/"}>Blog</a>{" "}
-                    | <span data-uk-icon="icon: future"></span> Takes 7 min
-                    reading.
-                  </p>
-                </header>
-                <figure>
-                  <img
-                    src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAEsCAYAAAA7Ldc6AAADuUlEQVR4nO3BgQAAAADDoPlTX+AIVQEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMA3p/4AAaxRls8AAAAASUVORK5CYII="
-                    data-src="https://picsum.photos/800/300/?random=2"
-                    width="800"
-                    height="300"
-                    alt="Alt text"
-                    className="lazy"
-                    data-uk-img="true"
-                  />
-                  <figcaption className="uk-padding-small uk-text-center uk-text-muted">
-                    Caption of the image
-                  </figcaption>
-                </figure>
-
-                <p>
-                  UPDATE 24th October 15.10 BST — Vivamus sed consequat urna.
-                  Fusce vitae urna sed ante placerat iaculis. Suspendisse
-                  potenti. Pellentesque quis fringilla libero. In hac habitasse
-                  platea dictumst.
-                </p>
-                <p>
-                  Ultricies eget, tempor sit amet, ante. Donec eu libero sit
-                  amet quam egestas semper. Aenean ultricies mi vitae est.
-                  Mauris placerat eleifend leo.
-                </p>
-                <a
-                  href={"/"}
-                  title="Read More"
-                  className="uk-button uk-button-default uk-button-small"
-                >
-                  READ MORE
-                </a>
-                <hr />
-              </article>
-              <article className="uk-section uk-section-small uk-padding-remove-top">
-                <header>
-                  <h2 className="uk-margin-remove-adjacent uk-text-bold uk-margin-small-bottom">
-                    <a
-                      title="Donec eu libero sit amet quam egestas semper"
-                      className="uk-link-reset"
-                      href={"/"}
-                    >
-                      Donec eu libero sit amet quam egestas semper
-                    </a>
-                  </h2>
-                  <p className="uk-article-meta">
-                    Written on March 21, 2019. Posted in <a href={"/"}>Blog</a>{" "}
-                    | <span data-uk-icon="icon: future"></span> Takes 7 min
-                    reading.
-                  </p>
-                </header>
-                <figure>
-                  <img
-                    src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAEsCAYAAAA7Ldc6AAADuUlEQVR4nO3BgQAAAADDoPlTX+AIVQEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMA3p/4AAaxRls8AAAAASUVORK5CYII="
-                    data-src="https://picsum.photos/800/300/?random=3"
-                    width="800"
-                    height="300"
-                    alt="Alt text"
-                    className="lazy"
-                    data-uk-img="true"
-                  />
-                  <figcaption className="uk-padding-small uk-text-center uk-text-muted">
-                    Caption of the image
-                  </figcaption>
-                </figure>
-                <p>
-                  UPDATE 24th October 15.10 BST — Vivamus sed consequat urna.
-                  Fusce vitae urna sed ante placerat iaculis. Suspendisse
-                  potenti. Pellentesque quis fringilla libero. In hac habitasse
-                  platea dictumst.
-                </p>
-                <p>
-                  Ultricies eget, tempor sit amet, ante. Donec eu libero sit
-                  amet quam egestas semper. Aenean ultricies mi vitae est.
-                  Mauris placerat eleifend leo.
-                </p>
-                <a
-                  href={"/"}
-                  title="Read More"
-                  className="uk-button uk-button-default uk-button-small"
-                >
-                  READ MORE
-                </a>
-              </article>
-              <article className="uk-section uk-section-small uk-padding-remove-top">
-                <header>
-                  <h2 className="uk-margin-remove-adjacent uk-text-bold uk-margin-small-bottom">
-                    <a
-                      title="Donec eu libero sit amet quam egestas semper"
-                      className="uk-link-reset"
-                      href={"/"}
-                    >
-                      Donec eu libero sit amet quam egestas semper
-                    </a>
-                  </h2>
-                  <p className="uk-article-meta">
-                    Written on March 21, 2019. Posted in <a href={"/"}>Blog</a>{" "}
-                    | <span data-uk-icon="icon: future"></span> Takes 7 min
-                    reading.
-                  </p>
-                </header>
-                <figure>
-                  <img
-                    src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAyAAAAEsCAYAAAA7Ldc6AAADuUlEQVR4nO3BgQAAAADDoPlTX+AIVQEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMA3p/4AAaxRls8AAAAASUVORK5CYII="
-                    data-src="https://picsum.photos/800/300/?random=4"
-                    width="800"
-                    height="300"
-                    alt="Alt text"
-                    className="lazy"
-                    data-uk-img="true"
-                  />
-                  <figcaption className="uk-padding-small uk-text-center uk-text-muted">
-                    Caption of the image
-                  </figcaption>
-                </figure>
-                <p>
-                  UPDATE 24th October 15.10 BST — Vivamus sed consequat urna.
-                  Fusce vitae urna sed ante placerat iaculis. Suspendisse
-                  potenti. Pellentesque quis fringilla libero. In hac habitasse
-                  platea dictumst.
-                </p>
-                <p>
-                  Ultricies eget, tempor sit amet, ante. Donec eu libero sit
-                  amet quam egestas semper. Aenean ultricies mi vitae est.
-                  Mauris placerat eleifend leo.
-                </p>
-                <a
-                  href={"/"}
-                  title="Read More"
-                  className="uk-button uk-button-default uk-button-small"
-                >
-                  READ MORE
-                </a>
-              </article>
+              )})}
+              
             </div>
             <div className="uk-width-1-3@m">
               <h4 className="uk-heading-line uk-text-bold">
-                <span>Archive</span>
+                <span>Sobre Nos</span>
               </h4>
-              <ul className="uk-list">
-                <li>
-                  <a href={"/"}>March</a>
-                </li>
-                <li>
-                  <a href={"/"}>February</a>
-                </li>
-                <li>
-                  <a href={"/"}>January</a>
-                </li>
-                <li>
-                  <a href={"/"}>
-                    December <small>(2017)</small>
-                  </a>
-                </li>
-                <li>
-                  <a href={"/"}>
-                    November <small>(2017)</small>
-                  </a>
-                </li>
-                <li>
-                  <a href={"/"}>
-                    October <small>(2017)</small>
-                  </a>
-                </li>
-                <li>
-                  <a href={"/"}>
-                    September <small>(2017)</small>
-                  </a>
-                </li>
-                <li>
-                  <a href={"/"}>
-                    August <small>(2017)</small>
-                  </a>
-                </li>
-              </ul>
-              <h4 className="uk-heading-line uk-text-bold">
-                <span>About Us</span>
-              </h4>
-              <div className="uk-tile uk-tile-small uk-tile-muted uk-border-rounded">
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do
-                eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-                enim ad minim veniam, quis nostrud exercitation ullamco laboris
-                nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor
-                in.
+              <div className="uk-tile uk-tile-small uk-tile-muted uk-border-rounded uk-text-justify">
+                Moz Trash uma plataforma que te matem conectado com o seu Município e com os demais munícipes, uma forma de melhorar o nosso Mundo, Informar e Alertar, Ensinar e Aprender. <strong>Higiene</strong> e a <strong>Saúde</strong> sao as prioridades, conecte-se através do celular, smartphone, computador ou qualquer dispositivo com acesso a internet.
               </div>
             </div>
           </div>
         </div>
       </div>
       {/* <!--/CONTENT--> */}
+      <Load load={load} />
     </>
   );
 }

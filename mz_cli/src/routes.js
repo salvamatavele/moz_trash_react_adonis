@@ -15,11 +15,20 @@ import Tips from './pages/admin/tips/Tips';
 import ShowTip from './pages/admin/tips/Show'
 import Schedules from './pages/admin/Schedules';
 
+import Tip from './pages/tip/index';
+import TipById from './pages/tip/Tip';
+import Advert from './pages/advert/index';
+import AdvertById from './pages/advert/Advert';
+
 function routes() {
   return (
     <>
      <Switch>
       <Route exact path="/" component={Home}/>
+      <Route exact path="/tips" component={Tip} />
+      <Route exact path="/tips/:id" component={TipById} />
+      <Route exact path="/adverts" component={Advert} />
+      <Route exact path="/adverts/:id" component={AdvertById} />
       {/* Admin */}
       <PrivateRoute exact access={3} path='/Dashboard' component={Admin}/>
       <PrivateRoute exact access={1} path="/admin/companies" component={Companies}/>

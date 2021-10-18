@@ -24,6 +24,8 @@ Route.group(() => {
   Route.post('claims', 'ClaimsController.store')
   Route.get('file/:folder/:path', 'HelpersController.showFile')
   Route.get('image/:folder/:path', 'HelpersController.showImage')
+  Route.get('adverts', 'AdvertsController.index')
+  Route.get('tips', 'TipsController.index')
 }).prefix('api')
 
 // Auth routes

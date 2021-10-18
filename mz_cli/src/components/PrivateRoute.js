@@ -13,6 +13,7 @@ function PrivateRoute({ access, component: Component, ...rest }) {
     }
     return ret;
   }
+  
   return (
     <Route
       {...rest}
@@ -31,14 +32,15 @@ function PrivateRoute({ access, component: Component, ...rest }) {
               <Unauthorizated />
             )
           ) : (
-            access === 3 &&
-            (user.user.admin !== 0 ? (
+            
+              access === 3 && (user.user.admin !== 0 ? (
               <Component {...props} />
-            ) : (
+              ) : (
               <Redirect
                 to={{ pathname: "/", state: { from: props.location } }}
               />
-            ))
+              ))
+          
           )
         ) : (
           <Redirect

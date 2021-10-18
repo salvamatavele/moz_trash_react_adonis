@@ -1,25 +1,25 @@
 import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { ModelPaginatorContract } from '@ioc:Adonis/Lucid/Orm'
-import Advert from 'App/Models/Advert'
+import Tip from 'App/Models/Tip'
 
-export default class AdvertsController {
+export default class TipsController {
   /**
    * index
    */
   public async index({ request }: HttpContextContract) {
     const page = await request.input('page', 1)
-    const limit = await request.input('per_page', 8)
+    const limit = await request.input('per_page', 4)
     const search = await request.input('search', '')
-    let adverts: ModelPaginatorContract<Advert>
+    let tips: ModelPaginatorContract<Tip>
     if (search) {
-      adverts = await Advert.query()
+      tips = await Tip.query()
         .where('title', 'LIKE', `%${search}%`)
         .orderBy('id', 'desc')
-        .preload('company')
+        .preload('user')
         .paginate(page, limit)
     } else {
-      adverts = await Advert.query().orderBy('id', 'desc').preload('company').paginate(page, limit)
+      tips = await Tip.query().orderBy('id', 'desc').preload('user').paginate(page, limit)
     }
-    return adverts.serialize()
+    return tips.serialize()
   }
 }

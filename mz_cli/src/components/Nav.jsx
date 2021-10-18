@@ -155,10 +155,10 @@ function Nav() {
         <nav className="nav-scroll">
           <ul className="uk-subnav uk-flex uk-flex-between uk-flex-nowrap">
             <li className="uk-active">
-              <button className="uk-button uk-button-text">Dicas</button>
+              <Link to={"/tips"} className="uk-button uk-button-text">Dicas</Link>
             </li>
             <li>
-              <button className="uk-button uk-button-text">Anúncios</button>
+              <Link to={"/adverts"} className="uk-button uk-button-text">Anúncios</Link>
             </li>
             <li>
               <button className="uk-button uk-button-text">Notificar</button>

@@ -56,6 +56,7 @@ function Schedules() {
       setLoad(false);
     }
     getSchedules();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [refresh]);
 
   function clear() {
