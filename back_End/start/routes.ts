@@ -24,8 +24,23 @@ Route.group(() => {
   Route.post('claims', 'ClaimsController.store')
   Route.get('file/:folder/:path', 'HelpersController.showFile')
   Route.get('image/:folder/:path', 'HelpersController.showImage')
+
   Route.get('adverts', 'AdvertsController.index')
+  Route.get('adverts/:user/:id', 'AdvertsController.getByUser').middleware(['auth:api'])
+  Route.get('adverts/:id', 'AdvertsController.show')
+  Route.post('adverts', 'AdvertsController.store').middleware(['auth:api'])
+  Route.put('adverts/:id', 'AdvertsController.update').middleware(['auth:api'])
+  Route.delete('adverts/:id', 'AdvertsController.destroy').middleware(['auth:api'])
+
   Route.get('tips', 'TipsController.index')
+  Route.get('tips/:id', 'TipsController.show')
+  Route.get('tips/:user/:id', 'TipsController.getByUser').middleware(['auth:api'])
+  Route.post('tips', 'TipsController.store').middleware(['auth:api'])
+  Route.put('tips/:id', 'TipsController.update').middleware(['auth:api'])
+  Route.delete('tips/:id', 'TipsController.destroy').middleware(['auth:api'])
+  Route.group(() => {
+    Route.resource('notifications', 'NotificationsController').apiOnly()
+  }).middleware(['auth:api'])
 }).prefix('api')
 
 // Auth routes
@@ -49,6 +64,8 @@ Route.group(() => {
   Route.resource('adverts', 'AdvertsController').apiOnly()
   Route.resource('claims', 'ClaimsController').apiOnly()
   Route.resource('schedules', 'SchedulesController').apiOnly()
+  Route.get('notifications', 'NotificationsController.index')
+  Route.get('notifications/:status', 'NotificationsController.getByStatus')
 })
   .prefix('api/admin')
   .namespace('App/Controllers/Http/Admin')

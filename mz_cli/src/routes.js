@@ -14,11 +14,15 @@ import ShowClaim from './pages/admin/claims/Show';
 import Tips from './pages/admin/tips/Tips';
 import ShowTip from './pages/admin/tips/Show'
 import Schedules from './pages/admin/Schedules';
+import Notifications from './pages/admin/notifications/index';
+import Notify from './pages/admin/notifications/Notify';
 
 import Tip from './pages/tip/index';
 import TipById from './pages/tip/Tip';
 import Advert from './pages/advert/index';
 import AdvertById from './pages/advert/Advert';
+import Notification from './pages/notification/index'
+import ProtectedRoute from './components/ProtectedRoute';
 
 function routes() {
   return (
@@ -29,6 +33,8 @@ function routes() {
       <Route exact path="/tips/:id" component={TipById} />
       <Route exact path="/adverts" component={Advert} />
       <Route exact path="/adverts/:id" component={AdvertById} />
+      <ProtectedRoute exact path="/notifications" component={Notification}/>
+
       {/* Admin */}
       <PrivateRoute exact access={3} path='/Dashboard' component={Admin}/>
       <PrivateRoute exact access={1} path="/admin/companies" component={Companies}/>
@@ -40,6 +46,8 @@ function routes() {
       <PrivateRoute exact access={3} path="/admin/tips" component={Tips}/>
       <PrivateRoute exact access={3} path="/admin/tips/:id" component={ShowTip}/>
       <PrivateRoute exact access={3} path="/admin/schedules" component={Schedules}/>
+      <PrivateRoute exact access={3} path="/admin/notifications" component={Notifications}/>
+      <PrivateRoute exact access={3} path="/admin/notifications/:id" component={Notify} />
 
       {/**Authentications Routes */}
       <Route path="/login" component={Auth} />

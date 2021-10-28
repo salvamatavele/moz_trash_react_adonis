@@ -91,7 +91,7 @@ function Nav() {
                 title="Moz Trash"
                 uk-tooltip="Moz Trash"
               >
-                <img width="50" src={logo} alt="Logo" />
+                <Link to={"/"} ><img width="50" src={logo} alt="Logo" /></Link>
               </li>
             </div>
             <div className="uk-navbar-right nav-overlay">
@@ -161,7 +161,7 @@ function Nav() {
               <Link to={"/adverts"} className="uk-button uk-button-text">Anúncios</Link>
             </li>
             <li>
-              <button className="uk-button uk-button-text">Notificar</button>
+              <Link to={"/notifications"} className="uk-button uk-button-text">Notificar</Link>
             </li>
             <li className="uk-visible@s">
               <button className="uk-button uk-button-text"

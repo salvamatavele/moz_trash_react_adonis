@@ -213,8 +213,8 @@ function Show() {
                             data-caption="+ Imagem"
                           >
                             <img
-                              width="100"
-                              src={`${Url}/image/tips/${image.image_url}`}
+                            width={images.length === 1 ? 400 : images.length === 2 ? 250 : 150}
+                            src={`${Url}/image/tips/${image.image_url}`}
                               alt="img"
                             />
                           </a>

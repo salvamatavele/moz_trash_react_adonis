@@ -5,6 +5,12 @@ export default class ScheduleStatu extends BaseModel {
   @column({ isPrimary: true })
   public id: number
 
+  @column()
+  public scheduleId: number
+
+  @column()
+  public userId: number
+
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime
 

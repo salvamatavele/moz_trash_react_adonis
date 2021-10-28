@@ -324,7 +324,11 @@ function Adverts() {
                     <td>{item.title}</td>
                     {user.user.admin === 1 && (
                       <td>
-                        <span className="uk-badge">{item.company.slog}</span>
+                        {item.company ? (
+                          <span className="uk-badge">{item.company.slog}</span>
+                        ) : (
+                          <span className="uk-badge">unknown</span>
+                        )}
                       </td>
                     )}
                     <td>
@@ -617,8 +621,16 @@ function Adverts() {
                   />
                 )}
               </p>
-              {advert.phone && <p><span uk-icon="icon: phone"></span>-{advert.phone}</p>}
-              {advert.address && <p><span uk-icon="icon: location"></span>-{advert.address}</p>}
+              {advert.phone && (
+                <p>
+                  <span uk-icon="icon: phone"></span>-{advert.phone}
+                </p>
+              )}
+              {advert.address && (
+                <p>
+                  <span uk-icon="icon: location"></span>-{advert.address}
+                </p>
+              )}
               <p className="uk-text-justify">{advert.content}</p>
               <div className="uk-grid-small uk-child-width-auto" uk-grid="true">
                 <div>

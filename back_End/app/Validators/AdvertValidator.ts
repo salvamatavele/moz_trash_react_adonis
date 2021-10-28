@@ -26,7 +26,8 @@ export default class AdvertValidator {
   public reporter = validator.reporters.api
 
   public schema = schema.create({
-    companyId: schema.number(),
+    companyId: schema.number.optional(),
+    userId: schema.number.optional(),
     title: schema.string({ trim: true }, [rules.maxLength(255), rules.minLength(5)]),
     category: schema.string({ trim: true }, [rules.maxLength(255), rules.minLength(5)]),
     phone: schema.string.optional({ trim: true }, [rules.maxLength(255), rules.minLength(8)]),

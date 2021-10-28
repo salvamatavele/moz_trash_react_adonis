@@ -9,8 +9,16 @@ export default class Adverts extends BaseSchema {
       table
         .integer('company_id')
         .unsigned()
+        .nullable()
         .references('id')
         .inTable('companies')
+        .onDelete('CASCADE')
+      table
+        .integer('user_id')
+        .unsigned()
+        .nullable()
+        .references('id')
+        .inTable('users')
         .onDelete('CASCADE')
       table.string('title').notNullable()
       table.text('content').notNullable()

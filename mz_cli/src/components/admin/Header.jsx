@@ -1,11 +1,89 @@
-import React from "react";
+import React, { useState, useEffect, memo } from "react";
 import { Link } from "react-router-dom";
 import "../../assets/css/Side.css";
 import "../../assets/css/Admin.css";
+import Axios from "../../app/Axios";
+import { useSelector } from "react-redux";
+import { selectUser } from "../../features/userSlice";
+import { ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
+import logo from "../../assets/images/logo.png";
+
 function Header() {
+  /**
+   * configs
+   */
+  const axios = Axios();
+  const { user } = useSelector(selectUser);
+  /**
+   * states
+   */
+  const [timer, setTimer] = useState(null);
+  const [isMounted, setIsMounted] = useState(false);
+  const [notifications, setNotifications] = useState([]);
+
+  let counter = 1;
+
+  async function fetchData() {
+    console.info(Notification.permission);
+    if (window.performance) {
+      console.info("window.performance works fine on this browser");
+    }
+
+    try {
+      const response = await axios.get("/admin/notifications/false");
+      if (Notification.permission === "granted") {
+        for (const key in response.data) {
+          if (counter === performance.navigation.type) {
+            showNotification(response.data[key].title);
+            setNotifications(response.data);
+          }
+        }
+        counter++;
+      } else if (Notification.permission !== "denied") {
+        Notification.requestPermission().then((permission) => {
+          if (permission === "granted") {
+            for (const key in response.data) {
+              if (counter === performance.navigation.type) {
+                showNotification(response.data[key].title);
+              }
+            }
+            counter++;
+          }
+        });
+      }
+    } catch (error) {
+      if (error.response) {
+        toast.warning("Ooops! Ocorreu algum problema.");
+        console.log(error.response);
+      }
+    }
+    clearTimeout(timer);
+    setTimer(setTimeout(fetchData, 1000));
+  }
+
+  useEffect(() => {
+    if (!isMounted) {
+      fetchData();
+      setIsMounted(true);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  function showNotification(body) {
+    const notify = new Notification("Nova Notificação", {
+      body: body,
+      icon: logo,
+    });
+    notify.onclick = (e) => {
+      window.location.href = "http://127.0.0.1:3000/dashboard";
+    };
+    return notify;
+  }
   return (
     <>
       {/* <!--HEADER--> */}
+      <ToastContainer />
       <header id="top-head" className="uk-position-fixed">
         <div className="uk-container uk-container-expand uk-background-primary">
           <nav
@@ -33,13 +111,43 @@ function Header() {
               <ul className="uk-navbar-nav">
                 <li>
                   <Link
-                    to="/"
+                    to="/#"
+                    className="uk-button-link"
                     data-uk-icon="icon:bell"
                     title="Notificações"
                     data-uk-tooltip="Notificações"
                   ></Link>
+                  <div
+                    uk-dropdown="animation: uk-animation-slide-top-small; duration: 1000"
+                    className="uk-background-secondary"
+                  >
+                    <ul className="uk-nav uk-dropdown-nav  uk-list uk-list-divider">
+                      {notifications.map((notify) => {
+                        return (
+                          <li key={notify.id} className="uk-active">
+                            <Link
+                              className="uk-link-text"
+                              to={`/admin/notifications/${notify.id}`}
+                            >
+                              {notify.title}
+                            </Link>
+                          </li>
+                        );
+                      })}
+                      <li className="">
+                        <Link
+                          className="uk-link-text"
+                          to={`/admin/notifications`}
+                        >
+                          Ver Todas Notificações
+                        </Link>
+                      </li>
+                    </ul>
+                  </div>
                 </li>
-                <span className="uk-badge side-badge-red">0</span>
+                <span className="uk-badge side-badge-red">
+                  {notifications.length}
+                </span>
                 <li>
                   <Link
                     to="/admin/schedules"
@@ -108,4 +216,4 @@ function Header() {
   );
 }
 
-export default Header;
+export default memo(Header);
