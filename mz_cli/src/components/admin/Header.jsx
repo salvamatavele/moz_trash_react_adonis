@@ -54,7 +54,6 @@ function Header() {
       }
     } catch (error) {
       if (error.response) {
-        toast.warning("Ooops! Ocorreu algum problema.");
         console.log(error.response);
       }
     }

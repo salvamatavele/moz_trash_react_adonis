@@ -66,6 +66,8 @@ Route.group(() => {
   Route.resource('schedules', 'SchedulesController').apiOnly()
   Route.get('notifications', 'NotificationsController.index')
   Route.get('notifications/:status', 'NotificationsController.getByStatus')
+  Route.get('notification/:id', 'NotificationsController.show')
+  Route.delete('notifications/:id', 'NotificationsController.destroy')
 })
   .prefix('api/admin')
   .namespace('App/Controllers/Http/Admin')
